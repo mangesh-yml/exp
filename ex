@@ -224,3 +224,48 @@ analogWrite(ENA,150);
   
 }
 
+
+
+
+
+
+
+
+
+
+import RPi.GPIO as GPIO
+import dht11
+import time
+import requests
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+
+sensor = dht11.DHT11(pin=4)
+
+api_key = "KRMK1Q4V2E20IZWZ"
+
+while True:
+
+    data = sensor.read()
+
+    if data.is_valid():
+
+        temp = data.temperature
+        hum = data.humidity
+
+        print("Temp:", temp)
+        print("Humidity:", hum)
+
+        url = "https://api.thingspeak.com/update?api_key={}&field1={}&field2={}".format(
+            api_key,
+            temp,
+            hum
+        )
+
+        requests.get(url)
+
+    else:
+        print("Sensor ok")
+
+    time.sleep(15)
